@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>최선생수학학원 — 상담 예약</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --p900:#26215C;--p800:#3C3489;--p600:#534AB7;--p400:#7F77DD;--p200:#AFA9EC;--p100:#CECBF6;--p50:#EEEDFE;
+  --g600:#5F5E5A;--g400:#888780;--g200:#B4B2A9;--g100:#D3D1C7;--g50:#F1EFE8;
+  --teal:#1D9E75;--teal50:#E1F5EE;--teal800:#085041;
+  --red:#A32D2D;--red50:#FCEBEB;
+  --bg:#F8F7FF;
+  --surface:#fff;
+  --border:rgba(0,0,0,0.1);
+  --text:#1a1a2e;--text2:#5a5a7a;--text3:#9898b0;
+  --radius:10px;--radius-lg:14px;
+  font-family:-apple-system,'Pretendard',BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+body{background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:var(--p900);padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.logo{width:32px;height:32px;background:var(--p600);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;}
+.topbar-title{font-size:15px;font-weight:600;color:#fff;}
+.topbar-sub{font-size:11px;color:var(--p200);margin-top:1px;display:flex;align-items:center;gap:4px;}
+.fb-dot{width:6px;height:6px;border-radius:50%;background:var(--g200);}
+.fb-dot.on{background:#4ade80;}
+.fb-dot.err{background:#f87171;}
+.topbar-stats{display:flex;gap:20px;}
+.tstat{text-align:right;}
+.tstat-num{font-size:18px;font-weight:700;color:#fff;}
+.tstat-label{font-size:10px;color:var(--p200);}
+
+/* ── LAYOUT ── */
+.app{display:grid;grid-template-columns:360px 1fr;min-height:calc(100vh - 60px);}
+
+/* ── LEFT PANEL ── */
+.left{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.panel-head{padding:16px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.panel-head-title{font-size:14px;font-weight:600;color:var(--text);}
+.badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--p50);color:var(--p800);}
+.form-body{padding:18px 20px;flex:1;overflow-y:auto;}
+.f-row{margin-bottom:13px;}
+.f-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.f-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;}
+.f-label .opt{font-weight:400;color:var(--text3);font-size:10px;}
+.f-label .req{color:var(--p400);font-size:10px;}
+input[type=text],input[type=tel],input[type=date],select,textarea{
+  width:100%;font-size:13px;padding:9px 11px;
+  background:#F9F8FF;border:1px solid #E0DEFF;border-radius:var(--radius);
+  color:var(--text);font-family:inherit;transition:border 0.15s,box-shadow 0.15s;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--p400);box-shadow:0 0 0 3px rgba(127,119,221,0.15);background:#fff;}
+textarea{resize:vertical;min-height:60px;line-height:1.6;}
+select{cursor:pointer;}
+
+/* time chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;}
+.chip{
+  padding:6px 11px;font-size:12px;font-weight:500;
+  border:1px solid #E0DEFF;border-radius:8px;cursor:pointer;
+  background:#F9F8FF;color:var(--text2);user-select:none;transition:all 0.12s;
+}
+.chip:hover{border-color:var(--p400);color:var(--p600);background:var(--p50);}
+.chip.on{background:var(--p50);border-color:var(--p400);color:var(--p800);font-weight:600;}
+
+/* buttons */
+.btn-main{
+  width:100%;padding:11px;font-size:13px;font-weight:600;
+  background:var(--p900);color:#fff;border:none;
+  border-radius:var(--radius);cursor:pointer;margin-top:8px;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background 0.15s,transform 0.1s;
+}
+.btn-main:hover{background:var(--p800);}
+.btn-main:active{transform:scale(0.99);}
+.btn-main:disabled{background:var(--g200);cursor:not-allowed;}
+.btn-sub{
+  width:100%;padding:9px;font-size:12px;font-weight:500;margin-top:6px;
+  background:#F9F8FF;color:var(--text2);border:1px solid #E0DEFF;
+  border-radius:var(--radius);cursor:pointer;transition:background 0.12s;
+}
+.btn-sub:hover{background:var(--p50);}
+.btn-cancel{width:100%;padding:7px;font-size:12px;color:var(--text3);border:none;background:none;cursor:pointer;margin-top:3px;display:none;}
+
+/* ── RIGHT PANEL ── */
+.right{background:var(--bg);display:flex;flex-direction:column;}
+.cal-head{
+  padding:14px 22px 12px;border-bottom:1px solid var(--border);
+  background:var(--surface);
+  display:flex;align-items:center;gap:8px;
+}
+.cal-tabs{display:flex;background:#EEF0FF;border-radius:9px;padding:3px;}
+.cal-tab{padding:6px 16px;font-size:12px;font-weight:600;border:none;background:transparent;color:var(--text3);border-radius:7px;cursor:pointer;transition:all 0.12s;}
+.cal-tab.on{background:var(--surface);color:var(--p800);box-shadow:0 1px 3px rgba(83,74,183,0.15);}
+.nav-btn{width:28px;height:28px;border:1px solid #E0DEFF;border-radius:8px;background:var(--surface);cursor:pointer;color:var(--text2);font-size:15px;display:flex;align-items:center;justify-content:center;transition:background 0.1s;}
+.nav-btn:hover{background:var(--p50);}
+.cal-month-lbl{font-size:14px;font-weight:600;color:var(--text);flex:1;text-align:center;}
+.cal-body{padding:16px 22px;flex:1;overflow-y:auto;}
+
+/* monthly grid */
+.mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:14px;}
+.mdow{text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:4px 0;}
+.mday{
+  aspect-ratio:3/2;display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-start;padding-top:4px;border-radius:9px;
+  cursor:pointer;font-size:12px;color:var(--text);position:relative;transition:background 0.1s;
+}
+.mday:hover{background:#EEF0FF;}
+.mday.dim{color:var(--text3);}
+.mday.today .dn{background:var(--p900);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.mday.sel{background:var(--p50);}
+.mday.has-e::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--p400);}
+.mday.today.has-e::after{background:var(--p200);}
+.dn{width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.mday-ev{font-size:9px;font-weight:600;color:var(--p800);background:var(--p50);border-radius:3px;padding:1px 4px;margin-top:1px;width:90%;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4;}
+.mday-ev-more{background:var(--g50);color:var(--text3);}
+.mday.today .mday-ev{background:rgba(255,255,255,0.25);color:#fff;}
+.mday.dim .mday-ev{opacity:0.4;}
+
+/* weekly */
+.wgrid{display:grid;grid-template-columns:44px repeat(7,1fr);border:1px solid #E0DEFF;border-radius:var(--radius);overflow:hidden;background:var(--surface);}
+.wh{text-align:center;padding:6px 2px;font-weight:600;font-size:10px;border-bottom:1px solid #E0DEFF;background:#F5F4FF;color:var(--text2);}
+.wh.tc{color:var(--p800);background:var(--p50);}
+.wtl{font-size:10px;color:var(--text3);border-bottom:1px solid #E0DEFF;border-right:1px solid #E0DEFF;padding:4px 6px;text-align:right;}
+.wc{border-bottom:1px solid #E0DEFF;border-right:1px solid #E0DEFF;min-height:38px;padding:2px 3px;cursor:pointer;transition:background 0.1s;}
+.wc:hover{background:var(--p50);}
+.wev{background:var(--p100);color:var(--p800);border-radius:4px;padding:2px 4px;font-size:10px;line-height:1.4;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;font-weight:500;}
+
+/* event list */
+.elist-head{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:10px;padding-top:14px;border-top:1px solid var(--border);}
+.ecard{background:var(--surface);border:1px solid #E0DEFF;border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:8px;}
+.ecard-top{display:flex;align-items:center;gap:10px;}
+.ebar{width:3px;align-self:stretch;border-radius:2px;background:var(--p400);flex-shrink:0;min-height:40px;}
+.ebar.t{background:var(--teal);}
+.einfo{flex:1;}
+.ename{font-size:13px;font-weight:600;color:var(--text);}
+.emeta{font-size:11px;color:var(--text3);margin-top:2px;}
+.ememo{font-size:11px;color:var(--text2);margin-top:5px;padding:4px 8px;background:#F9F8FF;border-radius:6px;border-left:2px solid var(--p200);}
+.etime{font-size:11px;font-weight:600;color:var(--p600);background:var(--p50);border-radius:6px;padding:3px 9px;white-space:nowrap;align-self:flex-start;}
+.sent-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:500;color:var(--teal800);background:var(--teal50);border-radius:4px;padding:2px 6px;margin-top:5px;}
+.eacts{display:flex;gap:6px;margin-top:9px;}
+.ebtn{flex:1;padding:7px 4px;font-size:11px;font-weight:600;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;transition:all 0.1s;}
+.ebtn-alim{background:var(--teal50);color:var(--teal800);border:1px solid var(--teal);}
+.ebtn-alim:hover{background:#9FE1CB;}
+.ebtn-edit{background:var(--p50);color:var(--p800);border:1px solid var(--p400);}
+.ebtn-edit:hover{background:var(--p100);}
+.ebtn-del{background:var(--red50);color:var(--red);border:1px solid var(--red);}
+.ebtn-del:hover{background:#F7C1C1;}
+
+/* modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:200;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--surface);border-radius:var(--radius-lg);padding:22px;width:380px;max-width:92vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(38,33,92,0.18);}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--text);}
+.modal-acts{display:flex;gap:8px;margin-top:14px;}
+.m-btn-notif{flex:1;padding:9px;font-size:12px;font-weight:600;background:var(--p50);color:var(--p800);border:1px solid var(--p400);border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+.m-btn-save{flex:1;padding:9px;font-size:12px;font-weight:600;background:#F9F8FF;color:var(--text2);border:1px solid #E0DEFF;border-radius:var(--radius);cursor:pointer;}
+.m-btn-del{width:100%;padding:9px;font-size:12px;font-weight:600;background:var(--red50);color:var(--red);border:1px solid var(--red);border-radius:var(--radius);cursor:pointer;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:5px;}
+.m-btn-cancel{width:100%;padding:7px;font-size:12px;color:var(--text3);border:none;background:none;cursor:pointer;margin-top:3px;}
+
+/* toast */
+.toast{position:fixed;bottom:24px;right:24px;z-index:300;background:var(--p900);color:#fff;padding:11px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:opacity 0.2s;box-shadow:0 4px 20px rgba(38,33,92,0.3);}
+.toast.show{opacity:1;}
+.toast.err{background:var(--red);}
+
+/* spinner */
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:sp 0.6s linear infinite;vertical-align:middle;}
+@keyframes sp{to{transform:rotate(360deg);}}
+
+/* ── MOBILE ── */
+@media(max-width:680px){
+  .app{grid-template-columns:1fr;grid-template-rows:1fr auto;}
+  .left{display:none;border-right:none;}
+  .right{display:none;}
+  .app.view-form .left{display:flex;}
+  .app.view-cal .right{display:flex;}
+  .mobile-nav{display:flex !important;}
+  .left,.right{min-height:calc(100vh - 115px);}
+  .topbar{padding:10px 16px;}
+  .topbar-stats{gap:14px;}
+  .tstat-num{font-size:16px;}
+  .form-body{padding:14px 16px;}
+  .cal-body{padding:12px 16px;}
+  .cal-head{padding:10px 14px;}
+  .f-row2{grid-template-columns:1fr;}
+}
+.mobile-nav{
+  display:none;background:var(--surface);
+  border-top:1px solid var(--border);padding:8px 0 14px;
+  position:sticky;bottom:0;
+}
+.mnav-wrap{display:flex;}
+.mnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:none;padding:4px 0;}
+.mnav-icon{font-size:22px;color:var(--text3);}
+.mnav-icon.on{color:var(--p600);}
+.mnav-lbl{font-size:9px;color:var(--text3);font-weight:600;}
+.mnav-lbl.on{color:var(--p600);}
+.mnav-plus-icon{font-size:20px;color:var(--p600);border:1.5px solid var(--p400);border-radius:10px;padding:1px 8px;}
+
+.empty-msg{font-size:12px;color:var(--text3);padding:6px 0;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">최</div>
+    <div>
+      <div class="topbar-title">최선생수학학원</div>
+      <div class="topbar-sub">
+        <div class="fb-dot" id="fbDot"></div>
+        <span id="fbTxt">Firebase 연결 중...</span>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-stats">
+    <div class="tstat"><div class="tstat-num" id="statToday">0</div><div class="tstat-label">오늘</div></div>
+    <div class="tstat"><div class="tstat-num" id="statWeek">0</div><div class="tstat-label">이번 주</div></div>
+    <div class="tstat"><div class="tstat-num" id="statMonth">0</div><div class="tstat-label">이번 달</div></div>
+  </div>
+</div>
+
+<!-- APP BODY -->
+<div class="app view-cal" id="app">
+
+  <!-- LEFT: FORM -->
+  <div class="left">
+    <div class="panel-head">
+      <span class="panel-head-title" id="formTitle">새 상담 등록</span>
+      <span class="badge" id="formBadge">+ 신규</span>
+    </div>
+    <div class="form-body">
+      <div class="f-row f-row2">
+        <div>
+          <div class="f-label">학생 이름 <span class="opt">선택</span></div>
+          <input type="text" id="fName" placeholder="홍길동">
+        </div>
+        <div>
+          <div class="f-label">학년 <span class="opt">선택</span></div>
+          <select id="fGrade">
+            <option value="">-- 선택 --</option>
+            <option>중1</option><option>중2</option><option>중3</option>
+            <option>고1</option><option>고2</option><option>고3</option><option>기타</option>
+          </select>
+        </div>
+      </div>
+      <div class="f-row f-row2">
+        <div>
+          <div class="f-label">학부모 이름 <span class="opt">선택</span></div>
+          <input type="text" id="fParent" placeholder="홍부모">
+        </div>
+        <div>
+          <div class="f-label">연락처 <span class="opt">선택</span></div>
+          <input type="tel" id="fPhone" placeholder="010-0000-0000">
+        </div>
+      </div>
+      <div class="f-row f-row2">
+        <div>
+          <div class="f-label">날짜 <span class="req">필수</span></div>
+          <input type="date" id="fDate">
+        </div>
+        <div>
+          <div class="f-label">시간 <span class="req">필수</span></div>
+          <div style="font-size:12px;color:var(--p600);font-weight:600;padding-top:6px;" id="fTimeDisplay">선택 안 됨</div>
+        </div>
+      </div>
+      <div class="f-row">
+        <div class="chips" id="fChips">
+          <span class="chip" data-v="오후 3시">오후 3시</span>
+          <span class="chip" data-v="오후 4시">오후 4시</span>
+          <span class="chip" data-v="오후 5시">오후 5시</span>
+          <span class="chip" data-v="오후 6시">오후 6시</span>
+          <span class="chip" data-v="오후 7시">오후 7시</span>
+          <span class="chip" data-v="오후 8시">오후 8시</span>
+          <span class="chip" data-v="오후 9시">오후 9시</span>
+        </div>
+      </div>
+      <div class="f-row">
+        <div class="f-label">메모 <span class="opt"><i class="ti ti-lock" style="font-size:10px;"></i> 나만 보는 참고용</span></div>
+        <textarea id="fMemo" placeholder="상담 관련 메모를 입력하세요"></textarea>
+      </div>
+      <button class="btn-main" id="btnSubmit" onclick="submitForm(true)">
+        <i class="ti ti-send" style="font-size:15px;"></i> 등록 + 알림톡 발송
+      </button>
+      <button class="btn-sub" onclick="submitForm(false)">저장만 (알림톡 생략)</button>
+      <button class="btn-cancel" id="btnCancel" onclick="cancelEdit()">취소</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: CALENDAR -->
+  <div class="right">
+    <div class="cal-head">
+      <div class="cal-tabs">
+        <button class="cal-tab on" id="tabM" onclick="setView('m')">월간</button>
+        <button class="cal-tab" id="tabW" onclick="setView('w')">주간</button>
+      </div>
+      <button class="nav-btn" onclick="nav(-1)">‹</button>
+      <span class="cal-month-lbl" id="calLbl"></span>
+      <button class="nav-btn" onclick="nav(1)">›</button>
+    </div>
+    <div class="cal-body" id="calBody"></div>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav">
+    <div class="mnav-wrap">
+      <button class="mnav-item" onclick="mNav('cal')">
+        <i class="ti ti-calendar mnav-icon on" id="mIcoCal"></i>
+        <span class="mnav-lbl on" id="mLblCal">캘린더</span>
+      </button>
+      <button class="mnav-item" onclick="mNav('form')">
+        <i class="ti ti-plus mnav-plus-icon"></i>
+        <span class="mnav-lbl" style="color:var(--p600);">등록</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div class="modal-title">상담 수정</div>
+    <div class="f-row f-row2">
+      <div><div class="f-label">학생 이름</div><input type="text" id="eN"></div>
+      <div><div class="f-label">학년</div>
+        <select id="eG"><option value="">--</option><option>중1</option><option>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option><option>기타</option></select>
+      </div>
+    </div>
+    <div class="f-row f-row2">
+      <div><div class="f-label">학부모</div><input type="text" id="eP"></div>
+      <div><div class="f-label">연락처</div><input type="tel" id="ePh"></div>
+    </div>
+    <div class="f-row f-row2">
+      <div><div class="f-label">날짜</div><input type="date" id="eD"></div>
+      <div><div class="f-label">시간</div><div style="font-size:12px;color:var(--p600);font-weight:600;padding-top:6px;" id="eTimeDisplay"></div></div>
+    </div>
+    <div class="f-row">
+      <div class="chips" id="eChips">
+        <span class="chip" data-v="오후 3시">오후 3시</span>
+        <span class="chip" data-v="오후 4시">오후 4시</span>
+        <span class="chip" data-v="오후 5시">오후 5시</span>
+        <span class="chip" data-v="오후 6시">오후 6시</span>
+        <span class="chip" data-v="오후 7시">오후 7시</span>
+        <span class="chip" data-v="오후 8시">오후 8시</span>
+        <span class="chip" data-v="오후 9시">오후 9시</span>
+      </div>
+    </div>
+    <div class="f-row"><div class="f-label">메모</div><textarea id="eM"></textarea></div>
+    <div class="modal-acts">
+      <button class="m-btn-notif" onclick="saveEdit(true)"><i class="ti ti-send" style="font-size:12px;"></i> 저장 + 알림톡 재발송</button>
+      <button class="m-btn-save" onclick="saveEdit(false)">저장만</button>
+    </div>
+    <button class="m-btn-del" onclick="deleteFromModal()"><i class="ti ti-trash" style="font-size:13px;"></i> 삭제</button>
+    <button class="m-btn-cancel" onclick="closeModal()">취소</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+/* ── CONFIG ── */
+const FB_CONFIG = {
+  apiKey: "AIzaSyC6_EjWngSf_EQuqYP7j_rkC53fZUk6UCs",
+  authDomain: "choi-math-memo-1d6e6.firebaseapp.com",
+  projectId: "choi-math-memo-1d6e6",
+  storageBucket: "choi-math-memo-1d6e6.firebasestorage.app",
+  messagingSenderId: "805131169031",
+  appId: "1:805131169031:web:ed09dc28e2ae030f9329a2"
+};
+
+/* ── STATE ── */
+let db = null, data = [], selDate = null;
+let calView = 'm', curY = new Date().getFullYear(), curM = new Date().getMonth();
+let curWeekStart = (function(){ const d = new Date(); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); return d; })();
+let editId = null, editTime = '', selTime = '';
+
+/* ── FIREBASE ── */
+function initFB() {
+  try {
+    firebase.initializeApp(FB_CONFIG);
+    db = firebase.firestore();
+    setFbStatus('on', 'Firebase 연결됨');
+    db.collection('consultations').orderBy('date').onSnapshot(snap => {
+      data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      updateStats(); renderCal();
+    }, () => { setFbStatus('err', '데모 모드 (Firebase 미연결)'); loadDemo(); });
+  } catch (e) {
+    setFbStatus('err', '데모 모드 (Firebase 미연결)');
+    loadDemo();
+  }
+}
+
+function setFbStatus(s, t) {
+  const d = document.getElementById('fbDot');
+  d.className = 'fb-dot' + (s === 'on' ? ' on' : s === 'err' ? ' err' : '');
+  document.getElementById('fbTxt').textContent = t;
+}
+
+function loadDemo() {
+  const t = new Date(), pad = n => String(n).padStart(2, '0');
+  const base = `${t.getFullYear()}-${pad(t.getMonth() + 1)}`;
+  data = [
+    { id: 'd1', studentName: '김민준', grade: '고2', parentName: '김철수', phone: '010-1234-5678', date: `${base}-${pad(t.getDate())}`, time: '오후 4시', memo: '수학 선행 문의', createdAt: new Date().toISOString() },
+    { id: 'd2', studentName: '이서연', grade: '중3', parentName: '이영희', phone: '010-9876-5432', date: `${base}-${pad(t.getDate() + 2)}`, time: '오후 6시', memo: '', createdAt: new Date().toISOString() },
+  ];
+  updateStats(); renderCal();
+}
+
+/* ── STATS ── */
+function updateStats() {
+  const now = new Date(), td = fmt(now);
+  const ws = new Date(now); ws.setDate(now.getDate() - now.getDay());
+  const we = new Date(ws); we.setDate(ws.getDate() + 6);
+  const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  document.getElementById('statToday').textContent = data.filter(c => c.date === td).length;
+  document.getElementById('statWeek').textContent = data.filter(c => c.date >= fmt(ws) && c.date <= fmt(we)).length;
+  document.getElementById('statMonth').textContent = data.filter(c => c.date && c.date.startsWith(ym)).length;
+}
+
+function fmt(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+
+/* ── CHIPS ── */
+function setupChips(cid, cb) {
+  document.querySelectorAll(`#${cid} .chip`).forEach(c => {
+    c.onclick = () => {
+      document.querySelectorAll(`#${cid} .chip`).forEach(x => x.classList.remove('on'));
+      c.classList.add('on'); cb(c.dataset.v);
+    };
+  });
+}
+setupChips('fChips', v => { selTime = v; document.getElementById('fTimeDisplay').textContent = v; });
+setupChips('eChips', v => { editTime = v; document.getElementById('eTimeDisplay').textContent = v; });
+
+/* ── MOBILE NAV ── */
+function mNav(view) {
+  document.getElementById('app').className = 'app view-' + view;
+  ['Cal', 'Form'].forEach(k => {
+    const on = k.toLowerCase() === view;
+    document.getElementById('mIco' + k).classList.toggle('on', on);
+    document.getElementById('mLbl' + k).classList.toggle('on', on);
+  });
+}
+
+/* ── CALENDAR ── */
+function setView(v) {
+  calView = v;
+  document.getElementById('tabM').classList.toggle('on', v === 'm');
+  document.getElementById('tabW').classList.toggle('on', v === 'w');
+  renderCal();
+}
+function nav(d) {
+  if (calView === 'w') {
+    curWeekStart = new Date(curWeekStart);
+    curWeekStart.setDate(curWeekStart.getDate() + d * 7);
+    curY = curWeekStart.getFullYear();
+    curM = curWeekStart.getMonth();
+  } else {
+    curM += d;
+    if (curM > 11) { curM = 0; curY++; }
+    if (curM < 0) { curM = 11; curY--; }
+  }
+  renderCal();
+}
+
+function renderCal() {
+  if (calView === 'w') {
+    const we = new Date(curWeekStart); we.setDate(curWeekStart.getDate() + 6);
+    const s = curWeekStart, e = we;
+    const sl = `${s.getMonth()+1}/${s.getDate()}`, el = `${e.getMonth()+1}/${e.getDate()}`;
+    document.getElementById('calLbl').textContent = `${s.getFullYear()}년 ${sl} – ${el}`;
+  } else {
+    document.getElementById('calLbl').textContent = `${curY}년 ${curM + 1}월`;
+  }
+  calView === 'm' ? renderMonth() : renderWeek();
+}
+
+function renderMonth() {
+  const now = new Date(), today = fmt(now);
+  const fd = new Date(curY, curM, 1).getDay(), dim = new Date(curY, curM + 1, 0).getDate(), dprev = new Date(curY, curM, 0).getDate();
+  const evDates = new Set(data.map(c => c.date));
+  let h = '<div class="mgrid">';
+  ['일', '월', '화', '수', '목', '금', '토'].forEach(d => { h += `<div class="mdow">${d}</div>`; });
+  let cells = [];
+  for (let i = fd - 1; i >= 0; i--) cells.push({ n: dprev - i, cur: false });
+  for (let d = 1; d <= dim; d++) cells.push({ n: d, cur: true });
+  while (cells.length % 7) cells.push({ n: cells.length - dim - fd + 1, cur: false });
+  cells.forEach(({ n, cur }) => {
+    const ds = cur ? `${curY}-${String(curM + 1).padStart(2, '0')}-${String(n).padStart(2, '0')}` : '';
+    const isT = ds === today, isS = ds === selDate;
+    const dayEvs = cur ? data.filter(c => c.date === ds) : [];
+    const hasE = dayEvs.length > 0;
+    let evLabels = '';
+    dayEvs.slice(0, 2).forEach(e => {
+      const label = [e.studentName, e.grade].filter(Boolean).join(' ');
+      evLabels += `<div class="mday-ev">${label || e.time}</div>`;
+    });
+    if (dayEvs.length > 2) evLabels += `<div class="mday-ev mday-ev-more">+${dayEvs.length - 2}</div>`;
+    h += `<div class="mday${!cur ? ' dim' : ''}${isT ? ' today' : ''}${isS ? ' sel' : ''}${hasE ? ' has-e' : ''}" onclick="${cur ? `pickDate('${ds}')` : ''}"><span class="dn">${n}</span>${evLabels}</div>`;
+  });
+  h += '</div>';
+  h += selDate ? buildElist(selDate) : '<div class="empty-msg">날짜를 클릭하면 상담 목록이 표시됩니다</div>';
+  document.getElementById('calBody').innerHTML = h;
+}
+
+function renderWeek() {
+  const now = new Date(), today = fmt(now);
+  const days = [];
+  for (let i = 0; i < 7; i++) { const d = new Date(curWeekStart); d.setDate(curWeekStart.getDate() + i); days.push(d); }
+  const tmap = { '오후 3시': 15, '오후 4시': 16, '오후 5시': 17, '오후 6시': 18, '오후 7시': 19, '오후 8시': 20, '오후 9시': 21 };
+  const dows = ['일', '월', '화', '수', '목', '금', '토'];
+  let h = '<div class="wgrid">';
+  h += '<div class="wh" style="border-right:1px solid #E0DEFF;border-bottom:1px solid #E0DEFF;"></div>';
+  days.forEach(d => { const isT = fmt(d) === today; h += `<div class="wh${isT ? ' tc' : ''}">${dows[d.getDay()]}<br><span style="font-size:13px;">${d.getDate()}</span></div>`; });
+  [15, 16, 17, 18, 19, 20, 21].forEach(hr => {
+    h += `<div class="wtl">오후 ${hr - 12}시</div>`;
+    days.forEach(d => {
+      const ds = fmt(d), evs = data.filter(c => c.date === ds && tmap[c.time] === hr);
+      let ev = ''; evs.forEach(e => { ev += `<div class="wev" onclick="openEdit('${e.id}')">${e.studentName || '(이름없음)'}</div>`; });
+      h += `<div class="wc" onclick="pickDate('${ds}')">${ev}</div>`;
+    });
+  });
+  h += '</div>';
+  if (selDate) h += `<div style="margin-top:14px;">${buildElist(selDate)}</div>`;
+  document.getElementById('calBody').innerHTML = h;
+}
+
+function buildElist(ds) {
+  const evs = data.filter(c => c.date === ds).sort((a, b) => a.time > b.time ? 1 : -1);
+  const d = new Date(ds + 'T00:00:00'), dows = ['일', '월', '화', '수', '목', '금', '토'];
+  const lbl = `${d.getMonth() + 1}월 ${d.getDate()}일 (${dows[d.getDay()]}) 상담`;
+  if (!evs.length) return `<div class="elist-head">${lbl}</div><div class="empty-msg">예약된 상담이 없습니다</div>`;
+  let h = `<div class="elist-head">${lbl} · ${evs.length}건</div>`;
+  evs.forEach((e, i) => {
+    const lastSent = e.lastAlimtalkSent ? `<div class="sent-badge"><i class="ti ti-check" style="font-size:10px;"></i> 마지막 발송: ${e.lastAlimtalkSent}</div>` : '';
+    h += `<div class="ecard">
+      <div class="ecard-top">
+        <div class="ebar ${i % 2 ? 't' : ''}"></div>
+        <div class="einfo">
+          <div class="ename">${e.studentName || '(이름 없음)'} ${e.grade ? `<span style="font-size:11px;color:var(--text3);font-weight:400;">${e.grade}</span>` : ''}</div>
+          <div class="emeta">${[e.parentName, e.phone].filter(Boolean).join(' · ')}</div>
+          ${e.memo ? `<div class="ememo"><i class="ti ti-lock" style="font-size:10px;"></i> ${e.memo}</div>` : ''}
+          ${lastSent}
+        </div>
+        <div class="etime">${e.time}</div>
+      </div>
+      <div class="eacts">
+        <button class="ebtn ebtn-alim" onclick="sendAlimOnly('${e.id}', this)"><i class="ti ti-message" style="font-size:11px;"></i> 알림톡</button>
+        <button class="ebtn ebtn-edit" onclick="openEdit('${e.id}')"><i class="ti ti-edit" style="font-size:11px;"></i> 수정</button>
+        <button class="ebtn ebtn-del" onclick="del('${e.id}')"><i class="ti ti-trash" style="font-size:11px;"></i> 삭제</button>
+      </div>
+    </div>`;
+  });
+  return h;
+}
+
+function pickDate(ds) { selDate = ds; document.getElementById('fDate').value = ds; renderCal(); }
+
+/* ── ALIMTALK ── */
+async function sendAlimOnly(id, btn) {
+  const c = data.find(x => x.id === id);
+  if (!c) return;
+  if (!c.phone) { showToast('연락처가 없어 발송할 수 없습니다', true); return; }
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin" style="border:2px solid rgba(8,80,65,0.3);border-top-color:var(--teal800);"></span>';
+  try {
+    await mockAlim(c, 'instant');
+    const now = new Date(), ts = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+    if (db) await db.collection('consultations').doc(id).update({ lastAlimtalkSent: ts });
+    else { const i = data.findIndex(x => x.id === id); if (i > -1) data[i].lastAlimtalkSent = ts; }
+    showToast(`${c.studentName || ''}님 알림톡 발송 완료 ✓`);
+    renderCal();
+  } catch { showToast('발송 중 오류 발생', true); }
+  finally { btn.disabled = false; btn.innerHTML = orig; }
+}
+
+async function mockAlim(d, type = 'instant') {
+  const dt = new Date(d.date + 'T00:00:00'), dows = ['일', '월', '화', '수', '목', '금', '토'];
+  const dateStr = `${dt.getMonth() + 1}월 ${dt.getDate()}일 (${dows[dt.getDay()]})`;
+  const msg = type === 'instant'
+    ? `안녕하세요, 최선생수학학원입니다.\n상담이 예약되었습니다. 일정 변경 시 미리 연락 부탁드립니다.\n\n날짜 : ${dateStr}\n시간 : ${d.time}\n문의 : 010-5147-6394`
+    : `안녕하세요, 최선생수학학원입니다.\n내일 상담 일정을 안내드립니다.\n\n날짜 : ${dateStr}\n시간 : ${d.time}\n문의 : 010-5147-6394`;
+  console.log(`[Solapi 알림톡 - ${type === 'instant' ? '즉시' : '하루 전 자동'}]`, d.phone, '\n' + msg);
+  return new Promise(r => setTimeout(r, 400));
+}
+
+/* ── FORM SUBMIT ── */
+async function submitForm(notif) {
+  const date = document.getElementById('fDate').value;
+  if (!date || !selTime) { showToast('날짜와 시간을 선택해주세요', true); return; }
+  const d = {
+    studentName: document.getElementById('fName').value,
+    grade: document.getElementById('fGrade').value,
+    parentName: document.getElementById('fParent').value,
+    phone: document.getElementById('fPhone').value,
+    date, time: selTime,
+    memo: document.getElementById('fMemo').value,
+    createdAt: new Date().toISOString()
+  };
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> 저장 중...';
+  try {
+    if (db) await db.collection('consultations').add(d);
+    else { data.push({ id: 'l' + Date.now(), ...d }); updateStats(); renderCal(); }
+    if (notif && d.phone) { await mockAlim(d, 'instant'); showToast('등록 완료 · 알림톡 발송 ✓'); }
+    else showToast('저장되었습니다 ✓');
+    resetForm(); selDate = date; mNav('cal');
+  } catch { showToast('저장 중 오류 발생', true); }
+  finally { btn.disabled = false; btn.innerHTML = '<i class="ti ti-send" style="font-size:15px;"></i> 등록 + 알림톡 발송'; }
+}
+
+function resetForm() {
+  ['fName', 'fParent', 'fPhone', 'fMemo'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('fGrade').value = '';
+  document.getElementById('fDate').value = fmt(new Date());
+  document.querySelectorAll('#fChips .chip').forEach(c => c.classList.remove('on'));
+  selTime = ''; document.getElementById('fTimeDisplay').textContent = '선택 안 됨';
+  document.getElementById('btnCancel').style.display = 'none';
+  document.getElementById('formTitle').textContent = '새 상담 등록';
+  document.getElementById('formBadge').textContent = '+ 신규';
+  editId = null;
+}
+function cancelEdit() { resetForm(); }
+
+/* ── EDIT MODAL ── */
+function openEdit(id) {
+  const c = data.find(x => x.id === id); if (!c) return;
+  editId = id; editTime = c.time || '';
+  document.getElementById('eN').value = c.studentName || '';
+  document.getElementById('eG').value = c.grade || '';
+  document.getElementById('eP').value = c.parentName || '';
+  document.getElementById('ePh').value = c.phone || '';
+  document.getElementById('eD').value = c.date || '';
+  document.getElementById('eM').value = c.memo || '';
+  document.getElementById('eTimeDisplay').textContent = c.time || '선택 안 됨';
+  document.querySelectorAll('#eChips .chip').forEach(ch => ch.classList.toggle('on', ch.dataset.v === c.time));
+  document.getElementById('editModal').classList.add('open');
+}
+
+async function saveEdit(notif) {
+  const d = {
+    studentName: document.getElementById('eN').value, grade: document.getElementById('eG').value,
+    parentName: document.getElementById('eP').value, phone: document.getElementById('ePh').value,
+    date: document.getElementById('eD').value, time: editTime,
+    memo: document.getElementById('eM').value, updatedAt: new Date().toISOString()
+  };
+  try {
+    if (db) await db.collection('consultations').doc(editId).update(d);
+    else { const i = data.findIndex(x => x.id === editId); if (i > -1) data[i] = { ...data[i], ...d }; updateStats(); renderCal(); }
+    if (notif && d.phone) { await mockAlim(d, 'instant'); showToast('수정 완료 · 알림톡 재발송 ✓'); }
+    else showToast('수정되었습니다 ✓');
+    closeModal(); renderCal();
+  } catch { showToast('수정 중 오류 발생', true); }
+}
+
+async function deleteFromModal() { if (!confirm('정말 삭제하시겠습니까?')) return; await del(editId, true); closeModal(); }
+
+async function del(id, skipConfirm = false) {
+  if (!skipConfirm && !confirm('정말 삭제하시겠습니까?')) return;
+  try {
+    if (db) await db.collection('consultations').doc(id).delete();
+    else { data = data.filter(x => x.id !== id); updateStats(); }
+    showToast('삭제되었습니다'); renderCal();
+  } catch { showToast('삭제 중 오류 발생', true); }
+}
+
+function closeModal() { document.getElementById('editModal').classList.remove('open'); editId = null; editTime = ''; }
+
+/* ── TOAST ── */
+function showToast(msg, isErr = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (isErr ? ' err' : '');
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ── INIT ── */
+const todayStr = fmt(new Date());
+document.getElementById('fDate').value = todayStr;
+selDate = todayStr;
+initFB();
+setTimeout(renderCal, 100);
+</script>
+</body>
+</html>
