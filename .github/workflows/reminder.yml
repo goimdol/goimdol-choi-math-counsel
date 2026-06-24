@@ -1,0 +1,32 @@
+name: 상담 하루 전 알림톡 자동 발송
+
+on:
+  schedule:
+    # 매일 오전 9시 (KST) = UTC 00:00
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  send-reminder:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 패키지 설치
+        run: npm install
+
+      - name: 하루 전 알림톡 발송
+        env:
+          SOLAPI_API_KEY: ${{ secrets.SOLAPI_API_KEY }}
+          SOLAPI_API_SECRET: ${{ secrets.SOLAPI_API_SECRET }}
+          SOLAPI_TEMPLATE_REMINDER: ${{ secrets.SOLAPI_TEMPLATE_REMINDER }}
+          FIREBASE_PROJECT_ID: choi-math-memo-1d6e6
+          FIREBASE_API_KEY: AIzaSyC6_EjWngSf_EQuqYP7j_rkC53fZUk6UCs
+        run: node send_reminder.js
