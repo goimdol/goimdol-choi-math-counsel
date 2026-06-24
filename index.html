@@ -450,8 +450,10 @@ function mNav(view) {
   document.getElementById('app').className = 'app view-' + view;
   ['Cal', 'Form'].forEach(k => {
     const on = k.toLowerCase() === view;
-    document.getElementById('mIco' + k).classList.toggle('on', on);
-    document.getElementById('mLbl' + k).classList.toggle('on', on);
+    const ico = document.getElementById('mIco' + k);
+    const lbl = document.getElementById('mLbl' + k);
+    if (ico) ico.classList.toggle('on', on);
+    if (lbl) lbl.classList.toggle('on', on);
   });
 }
 
