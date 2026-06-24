@@ -27,7 +27,7 @@ async function sendAlimtalk(phone, dateStr, time, templateId) {
       to: phone.replace(/-/g, ''),
       from: '01051476394',
       kakaoOptions: {
-        pfId: '@최선생',
+        pfId: 'KA01PF2606231202555462JuD045iZxE',
         templateId: templateId,
         variables: {
           '#{날짜}': formatDate(dateStr),
