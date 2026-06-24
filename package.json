@@ -1,0 +1,10 @@
+{
+  "name": "choi-math-reminder",
+  "version": "1.0.0",
+  "description": "최선생수학학원 상담 하루 전 알림톡 자동 발송",
+  "main": "send_reminder.js",
+  "scripts": {
+    "start": "node send_reminder.js"
+  },
+  "dependencies": {}
+}
