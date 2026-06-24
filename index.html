@@ -626,13 +626,11 @@ async function submitForm(notif) {
     return;
   }
 
-  if (notif && d.phone) {
-    try {
-      await mockAlim(d, 'instant');
-      showToast('등록 완료 · 알림톡 발송 ✓');
-    } catch {
-      showToast('저장 완료 · 알림톡 발송 실패', true);
-    }
+if (notif && d.phone) {
+    showToast('등록 완료 · 알림톡 발송 중...');
+    mockAlim(d, 'instant')
+      .then(() => showToast('알림톡 발송 완료 ✓'))
+      .catch(() => showToast('알림톡 발송 실패', true));
   } else {
     showToast('저장되었습니다 ✓');
   }
