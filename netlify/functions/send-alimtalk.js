@@ -1,6 +1,6 @@
 const https = require('https');
 const crypto = require('crypto');
-
+const TEMPLATE_ID = process.env.SOLAPI_TEMPLATE_INSTANT;
 const SOLAPI_API_KEY = process.env.SOLAPI_API_KEY;
 const SOLAPI_API_SECRET = process.env.SOLAPI_API_SECRET;
 const TEMPLATE_INSTANT = process.env.SOLAPI_TEMPLATE_INSTANT;
