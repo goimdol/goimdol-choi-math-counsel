@@ -589,13 +589,14 @@ async function sendAlimOnly(id, btn) {
 }
 
 async function mockAlim(d, type = 'instant') {
-  const dt = new Date(d.date + 'T00:00:00'), dows = ['일', '월', '화', '수', '목', '금', '토'];
-  const dateStr = `${dt.getMonth() + 1}월 ${dt.getDate()}일 (${dows[dt.getDay()]})`;
-  const msg = type === 'instant'
-    ? `안녕하세요, 최선생수학학원입니다.\n상담이 예약되었습니다. 일정 변경 시 미리 연락 부탁드립니다.\n\n날짜 : ${dateStr}\n시간 : ${d.time}\n문의 : 010-5147-6394`
-    : `안녕하세요, 최선생수학학원입니다.\n내일 상담 일정을 안내드립니다.\n\n날짜 : ${dateStr}\n시간 : ${d.time}\n문의 : 010-5147-6394`;
-  console.log(`[Solapi 알림톡 - ${type === 'instant' ? '즉시' : '하루 전 자동'}]`, d.phone, '\n' + msg);
-  return new Promise(r => setTimeout(r, 400));
+  const res = await fetch('/.netlify/functions/send-alimtalk', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone: d.phone, date: d.date, time: d.time, type })
+  });
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || '알림톡 발송 실패');
+  return result;
 }
 
 /* ── FORM SUBMIT ── */
