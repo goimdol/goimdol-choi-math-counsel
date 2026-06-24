@@ -62,6 +62,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--p400);bo
 textarea{resize:vertical;min-height:60px;line-height:1.6;}
 select{cursor:pointer;}
 
+/* time row */
+.time-row{display:flex;gap:4px;align-items:center;}
+.time-select{flex:1;min-width:0;font-size:12px;padding:9px 6px;background:#F9F8FF;border:1px solid #E0DEFF;border-radius:var(--radius);color:var(--text);font-family:inherit;cursor:pointer;}
+.min-input{flex:1;min-width:0;font-size:13px;padding:9px 4px;background:#F9F8FF;border:1px solid #E0DEFF;border-radius:var(--radius);color:var(--text);text-align:center;width:100%;}
+.time-colon{font-size:14px;font-weight:600;color:var(--text2);flex-shrink:0;}
+
 /* time chips */
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;}
 .chip{
@@ -271,7 +277,16 @@ select{cursor:pointer;}
         </div>
         <div>
           <div class="f-label">시간 <span class="req">필수</span></div>
-          <div style="font-size:12px;color:var(--p600);font-weight:600;padding-top:6px;" id="fTimeDisplay">선택 안 됨</div>
+          <div class="time-row">
+            <select class="time-select" id="fHour" onchange="syncFChip()">
+              <option value="">-- 시 --</option>
+              <option>오후 3시</option><option>오후 4시</option><option>오후 5시</option>
+              <option>오후 6시</option><option>오후 7시</option><option>오후 8시</option><option>오후 9시</option>
+            </select>
+            <span class="time-colon">:</span>
+            <select class="time-select" id="fMin" onchange="updateFTime()"><option value="00">00분</option><option value="05">05분</option><option value="10">10분</option><option value="15">15분</option><option value="20">20분</option><option value="25">25분</option><option value="30">30분</option><option value="35">35분</option><option value="40">40분</option><option value="45">45분</option><option value="50">50분</option><option value="55">55분</option></select>
+          </div>
+          <div style="font-size:12px;color:var(--p600);font-weight:600;margin-top:4px;min-height:16px;" id="fTimeDisplay">선택 안 됨</div>
         </div>
       </div>
       <div class="f-row">
@@ -342,7 +357,18 @@ select{cursor:pointer;}
     </div>
     <div class="f-row f-row2">
       <div><div class="f-label">날짜</div><input type="date" id="eD"></div>
-      <div><div class="f-label">시간</div><div style="font-size:12px;color:var(--p600);font-weight:600;padding-top:6px;" id="eTimeDisplay"></div></div>
+      <div><div class="f-label">시간</div>
+        <div class="time-row">
+          <select class="time-select" id="eHour" onchange="syncEChip()">
+            <option value="">-- 시 --</option>
+            <option>오후 3시</option><option>오후 4시</option><option>오후 5시</option>
+            <option>오후 6시</option><option>오후 7시</option><option>오후 8시</option><option>오후 9시</option>
+          </select>
+          <span class="time-colon">:</span>
+          <select class="time-select" id="eMin" onchange="updateETime()"><option value="00">00분</option><option value="05">05분</option><option value="10">10분</option><option value="15">15분</option><option value="20">20분</option><option value="25">25분</option><option value="30">30분</option><option value="35">35분</option><option value="40">40분</option><option value="45">45분</option><option value="50">50분</option><option value="55">55분</option></select>
+        </div>
+        <div style="font-size:12px;color:var(--p600);font-weight:600;margin-top:4px;min-height:16px;" id="eTimeDisplay">선택 안 됨</div>
+      </div>
     </div>
     <div class="f-row">
       <div class="chips" id="eChips">
@@ -433,6 +459,30 @@ function updateStats() {
 
 function fmt(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
 
+/* ── TIME INPUT ── */
+function updateFTime() {
+  const hr = document.getElementById('fHour').value;
+  const min = (document.getElementById('fMin').value || '00').padStart(2, '0');
+  selTime = hr ? hr + ' ' + min + '분' : '';
+  document.getElementById('fTimeDisplay').textContent = selTime || '선택 안 됨';
+}
+function syncFChip() {
+  const v = document.getElementById('fHour').value;
+  document.querySelectorAll('#fChips .chip').forEach(c => c.classList.toggle('on', c.dataset.v === v));
+  updateFTime();
+}
+function updateETime() {
+  const hr = document.getElementById('eHour').value;
+  const min = (document.getElementById('eMin').value || '00').padStart(2, '0');
+  editTime = hr ? hr + ' ' + min + '분' : '';
+  document.getElementById('eTimeDisplay').textContent = editTime || '선택 안 됨';
+}
+function syncEChip() {
+  const v = document.getElementById('eHour').value;
+  document.querySelectorAll('#eChips .chip').forEach(c => c.classList.toggle('on', c.dataset.v === v));
+  updateETime();
+}
+
 /* ── CHIPS ── */
 function setupChips(cid, cb) {
   document.querySelectorAll(`#${cid} .chip`).forEach(c => {
@@ -442,8 +492,8 @@ function setupChips(cid, cb) {
     };
   });
 }
-setupChips('fChips', v => { selTime = v; document.getElementById('fTimeDisplay').textContent = v; });
-setupChips('eChips', v => { editTime = v; document.getElementById('eTimeDisplay').textContent = v; });
+setupChips('fChips', v => { document.getElementById('fHour').value = v; updateFTime(); });
+setupChips('eChips', v => { document.getElementById('eHour').value = v; updateETime(); });
 
 /* ── MOBILE NAV ── */
 function mNav(view) {
@@ -493,7 +543,6 @@ function renderCal() {
 function renderMonth() {
   const now = new Date(), today = fmt(now);
   const fd = new Date(curY, curM, 1).getDay(), dim = new Date(curY, curM + 1, 0).getDate(), dprev = new Date(curY, curM, 0).getDate();
-  const evDates = new Set(data.map(c => c.date));
   let h = '<div class="mgrid">';
   ['일', '월', '화', '수', '목', '금', '토'].forEach(d => { h += `<div class="mdow">${d}</div>`; });
   let cells = [];
@@ -616,7 +665,7 @@ async function submitForm(notif) {
   };
   const btn = document.getElementById('btnSubmit');
   btn.disabled = true; btn.innerHTML = '<span class="spin"></span> 저장 중...';
-  
+
   try {
     if (db) await db.collection('consultations').add(d);
     else { data.push({ id: 'l' + Date.now(), ...d }); updateStats(); renderCal(); }
@@ -626,7 +675,7 @@ async function submitForm(notif) {
     return;
   }
 
-if (notif && d.phone) {
+  if (notif && d.phone) {
     showToast('등록 완료 · 알림톡 발송 중...');
     mockAlim(d, 'instant')
       .then(() => showToast('알림톡 발송 완료 ✓'))
@@ -639,12 +688,13 @@ if (notif && d.phone) {
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-send" style="font-size:15px;"></i> 등록 + 알림톡 발송';
 }
 
-
 function resetForm() {
   ['fName', 'fParent', 'fPhone', 'fMemo'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('fGrade').value = '';
   document.getElementById('fDate').value = fmt(new Date());
   document.querySelectorAll('#fChips .chip').forEach(c => c.classList.remove('on'));
+  document.getElementById('fHour').value = '';
+  document.getElementById('fMin').value = '';
   selTime = ''; document.getElementById('fTimeDisplay').textContent = '선택 안 됨';
   document.getElementById('btnCancel').style.display = 'none';
   document.getElementById('formTitle').textContent = '새 상담 등록';
@@ -663,8 +713,13 @@ function openEdit(id) {
   document.getElementById('ePh').value = c.phone || '';
   document.getElementById('eD').value = c.date || '';
   document.getElementById('eM').value = c.memo || '';
+  const timeParts = (c.time || '').split(' ');
+  const hour = timeParts.length >= 2 ? timeParts[0] + ' ' + timeParts[1] : '';
+  const min = timeParts[2] ? timeParts[2].replace('분', '') : '';
+  document.getElementById('eHour').value = hour;
+  document.getElementById('eMin').value = min;
   document.getElementById('eTimeDisplay').textContent = c.time || '선택 안 됨';
-  document.querySelectorAll('#eChips .chip').forEach(ch => ch.classList.toggle('on', ch.dataset.v === c.time));
+  document.querySelectorAll('#eChips .chip').forEach(ch => ch.classList.toggle('on', ch.dataset.v === hour));
   document.getElementById('editModal').classList.add('open');
 }
 
