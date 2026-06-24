@@ -614,6 +614,32 @@ async function submitForm(notif) {
   };
   const btn = document.getElementById('btnSubmit');
   btn.disabled = true; btn.innerHTML = '<span class="spin"></span> 저장 중...';
+  
+  try {
+    if (db) await db.collection('consultations').add(d);
+    else { data.push({ id: 'l' + Date.now(), ...d }); updateStats(); renderCal(); }
+  } catch(e) {
+    showToast('저장 중 오류 발생', true);
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-send" style="font-size:15px;"></i> 등록 + 알림톡 발송';
+    return;
+  }
+
+  if (notif && d.phone) {
+    try {
+      await mockAlim(d, 'instant');
+      showToast('등록 완료 · 알림톡 발송 ✓');
+    } catch {
+      showToast('저장 완료 · 알림톡 발송 실패', true);
+    }
+  } else {
+    showToast('저장되었습니다 ✓');
+  }
+
+  resetForm(); selDate = date; mNav('cal');
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-send" style="font-size:15px;"></i> 등록 + 알림톡 발송';
+}
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> 저장 중...';
   try {
     if (db) await db.collection('consultations').add(d);
     else { data.push({ id: 'l' + Date.now(), ...d }); updateStats(); renderCal(); }
