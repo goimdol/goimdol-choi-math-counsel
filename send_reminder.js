@@ -109,7 +109,7 @@ async function sendAlimtalk(consultation) {
       to: consultation.phone.replace(/-/g, ''),
       from: '01051476394',
       kakaoOptions: {
-        pfId: 'KA01PF2606231202555462JuD045iZxE',
+        channelId: 'KA01PF2606231202555462JuD045iZxE',
         templateId: TEMPLATE_ID,
         variables: {
           '#{날짜}': dateStr,
