@@ -580,7 +580,7 @@ function renderWeek() {
   [15, 16, 17, 18, 19, 20, 21].forEach(hr => {
     h += `<div class="wtl">오후 ${hr - 12}시</div>`;
     days.forEach(d => {
-      const ds = fmt(d), evs = data.filter(c => c.date === ds && tmap[c.time] === hr);
+      const ds = fmt(d), evs = data.filter(c => c.date === ds && tmap[c.time.split(' ').slice(0,2).join(' ')] === hr);
       let ev = ''; evs.forEach(e => { ev += `<div class="wev" onclick="openEdit('${e.id}')">${e.studentName || '(이름없음)'}</div>`; });
       h += `<div class="wc" onclick="pickDate('${ds}')">${ev}</div>`;
     });
