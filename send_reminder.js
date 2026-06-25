@@ -19,6 +19,16 @@ function getTomorrowKST() {
   return `${y}-${m}-${d}`;
 }
 
+// ── 오늘 날짜 계산 (KST) ──
+function getTodayKST() {
+  const now = new Date();
+  const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  const y = kst.getUTCFullYear();
+  const m = String(kst.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(kst.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 // ── 날짜 포맷 (예: 6월 25일 (수)) ──
 function formatDate(dateStr) {
   const d = new Date(dateStr + 'T00:00:00+09:00');
@@ -26,8 +36,15 @@ function formatDate(dateStr) {
   return `${d.getMonth() + 1}월 ${d.getDate()}일 (${dows[d.getDay()]})`;
 }
 
+// ── 날짜 차이 계산 (일수) ──
+function dateDiffDays(dateStr1, dateStr2) {
+  const d1 = new Date(dateStr1 + 'T00:00:00+09:00');
+  const d2 = new Date(dateStr2 + 'T00:00:00+09:00');
+  return Math.round((d1 - d2) / (1000 * 60 * 60 * 24));
+}
+
 // ── Firestore REST API로 내일 상담 조회 ──
-async function getTomorrowConsultations(date) {
+async function getTomorrowConsultations(tomorrow, today) {
   const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/consultations?key=${FIREBASE_API_KEY}`;
 
   return new Promise((resolve, reject) => {
@@ -41,6 +58,8 @@ async function getTomorrowConsultations(date) {
           const result = docs
             .map(doc => {
               const f = doc.fields || {};
+              const createdAt = f.createdAt?.stringValue || '';
+              const createdDate = createdAt ? createdAt.slice(0, 10) : today;
               return {
                 id: doc.name.split('/').pop(),
                 studentName: f.studentName?.stringValue || '',
@@ -49,9 +68,20 @@ async function getTomorrowConsultations(date) {
                 date: f.date?.stringValue || '',
                 time: f.time?.stringValue || '',
                 grade: f.grade?.stringValue || '',
+                createdDate,
               };
             })
-            .filter(c => c.date === date && c.phone);
+            .filter(c => {
+              if (c.date !== tomorrow) return false;
+              if (!c.phone) return false;
+              // 상담일 - 등록일 >= 2일인 경우만 발송
+              const diff = dateDiffDays(c.date, c.createdDate);
+              if (diff < 2) {
+                console.log(`⏭️ 스킵 [${c.studentName}]: 등록일(${c.createdDate})과 상담일(${c.date}) 차이 ${diff}일 (2일 미만)`);
+                return false;
+              }
+              return true;
+            });
           resolve(result);
         } catch (e) {
           reject(e);
@@ -79,7 +109,7 @@ async function sendAlimtalk(consultation) {
       to: consultation.phone.replace(/-/g, ''),
       from: '01051476394',
       kakaoOptions: {
-        pfId: '@최선생',
+        pfId: 'KA01PF2606231202555462JuD045iZxE',
         templateId: TEMPLATE_ID,
         variables: {
           '#{날짜}': dateStr,
@@ -124,10 +154,12 @@ async function sendAlimtalk(consultation) {
 // ── 메인 실행 ──
 async function main() {
   const tomorrow = getTomorrowKST();
-  console.log(`📅 내일 날짜 (KST): ${tomorrow}`);
+  const today = getTodayKST();
+  console.log(`📅 오늘 (KST): ${today}`);
+  console.log(`📅 내일 (KST): ${tomorrow}`);
 
-  const consultations = await getTomorrowConsultations(tomorrow);
-  console.log(`📋 내일 상담 건수: ${consultations.length}건`);
+  const consultations = await getTomorrowConsultations(tomorrow, today);
+  console.log(`📋 발송 대상 건수: ${consultations.length}건`);
 
   if (consultations.length === 0) {
     console.log('발송할 상담이 없습니다.');
@@ -137,7 +169,6 @@ async function main() {
   for (const c of consultations) {
     console.log(`발송 중: ${c.studentName} (${c.phone}) - ${c.time}`);
     await sendAlimtalk(c);
-    // 발송 간격 1초
     await new Promise(r => setTimeout(r, 1000));
   }
 
