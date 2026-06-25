@@ -28,7 +28,7 @@ async function sendAlimtalk(phone, dateStr, time, templateId) {
       from: '01051476394',
       kakaoOptions: {
         pfId: 'KA01PF2606231202555462JuD045iZxE',
-        templateId: templateId,
+        templateCode: templateId,
         variables: {
           '#{날짜}': formatDate(dateStr),
           '#{시간}': time,
